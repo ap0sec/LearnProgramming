@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class StageController : MonoBehaviour {
 
@@ -10,40 +11,25 @@ public class StageController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		MapLoader();
+		MapLoader ();
 		MapMaker ();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
 	}
 
 	void MapLoader () {
-		string json = Resources.Load<TextAsset>("MapData/tutorial").ToString();
+		string json = Resources.Load<TextAsset>("MapData/" + SceneManager.GetActiveScene().name).ToString();
 		JsonUtility.FromJsonOverwrite(json, md);
-
-		/*
-		System.Random r = new System.Random();
-		for(int i = 0; i < Size; i++){
-			for(int j = 0; j < Size; j++){
-				md.x[i].y[j] = r.Next(0,2);
-			}
-		}
-		string json = JsonUtility.ToJson(md);
-		Debug.Log (json);
-		File.WriteAllText(Application.dataPath + "/Resources/tutorial.json", json);
-		*/
 	}
 
 	void MapMaker () {
 		GameObject floor = (GameObject)Resources.Load ("Prefabs/Floor");
 		GameObject wall = (GameObject)Resources.Load ("Prefabs/Wall");
 		GameObject cube = (GameObject)Resources.Load ("prefabs/Cube");
+		GameObject goal = (GameObject)Resources.Load ("prefabs/Goal");
+		GameObject tmp;
 
 		for (int i = 0; i < Size; i++) {
 			for (int j = 0; j < Size; j++) {
-				switch (md.z[i].x[j]) {
+				switch (md.z [i].x [j]) {
 				case 0:
 					Instantiate (floor, new Vector3 (j, 0, i), Quaternion.identity);
 					break;
@@ -52,8 +38,15 @@ public class StageController : MonoBehaviour {
 					break;
 				case 2:
 					Instantiate (floor, new Vector3 (j, 0, i), Quaternion.identity);
-					GameObject player = Instantiate (cube, new Vector3 (j, (float)0.5, i), Quaternion.identity) as GameObject;
-					player.name = "player";
+
+					GameObject player = Instantiate (cube, new Vector3 (j, (float)0.6, i), Quaternion.identity) as GameObject;
+					player.name = "Cube";
+					player.tag = "Player";
+
+					break;
+				case 3:
+					tmp = Instantiate (goal, new Vector3 (j, 0, i), Quaternion.identity) as GameObject;
+					tmp.name = "Goal";
 					break;
 				}
 			}
